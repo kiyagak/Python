@@ -28,7 +28,7 @@ def scoreFix (score, scale, sum):
 				return scoreDiv
 	
 
-'''print(scoreFix(1, 2, 9))
+print(scoreFix(1, 2, 9))
 print(scoreFix(12.3, 2, 3))
 print(scoreFix("a", 2, 3))
-print(scoreFix("0", 1, 1.2))'''
+print(scoreFix("0", 1, 1.2))
