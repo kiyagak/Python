@@ -92,7 +92,7 @@ def reformat(dateStr, refmtStr):
 	return pubDate
 	
 
-'''print(type(reformat(1533754439, "")))
+print(type(reformat(1533754439, "")))
 print(reformat('December 18, 2006', '%B %d, %Y'))
 print(reformat('09-12-2018', '%m-%d-%Y'))
 print(reformat('2 seconds ago', ""))
@@ -102,4 +102,4 @@ print(reformat('yesterday', ""))
 print(reformat('2 months ago', ""))
 print(reformat('3 weeks ago', ""))
 print(reformat('3 years ago', ""))
-print(reformat(1533754439505, ""))'''
+print(reformat(1533754439505, ""))
