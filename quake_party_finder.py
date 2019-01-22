@@ -1,7 +1,3 @@
-import urllib.request, json, urllib.parse
-
-
-
 '''
 Name: Kuteesa Kiyaga
 Date: January 22, 2019
@@ -9,6 +5,9 @@ Function: Determine whether individual Quake Champions users
 		  are playing as part of a party with one or more 
 		  other players.  
 '''
+
+#import libraries
+import urllib.request, json, urllib.parse
 
 
 
