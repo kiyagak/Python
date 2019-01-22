@@ -1,3 +1,6 @@
+#import libraries
+import urllib.request, json, urllib.parse
+
 '''
 Name: Kuteesa Kiyaga
 Date: January 22, 2019
@@ -5,9 +8,6 @@ Function: Determine whether individual Quake Champions users
 		  are playing as part of a party with one or more 
 		  other players.  
 '''
-
-#import libraries
-import urllib.request, json, urllib.parse
 
 
 
@@ -55,6 +55,8 @@ while break_queue == False:
 
 	
 	try:
+		print()
+		
 		#inform the user that the user they're searching for
 		#has not played any recent matches or is not an existing user
 		if ('matches' not in json.loads(urllib.request.urlopen(req).read())) and (user_prompt.lower() != '[stop]'):
@@ -70,6 +72,10 @@ while break_queue == False:
 		elif ('matches' not in json.loads(urllib.request.urlopen(req).read())) and (user_prompt.lower() == '[stop]') and (break_prompt.lower() == 'n'):
 			print('Resuming process.  ')
 			print()
+		#inform the user that they haven't pressed Y or N
+		#after entering [STOP]
+		elif ('matches' not in json.loads(urllib.request.urlopen(req).read())) and (user_prompt.lower() == '[stop]') and (break_prompt.lower() != 'y' or break_prompt.lower() != 'n'):
+			print('You have not entered N or Y.  Press N or Y to stop the process.  ')
 		else:
 			#variable containing the user's match data
 			matches = json.loads(urllib.request.urlopen(req).read())['matches']
@@ -244,15 +250,19 @@ while break_queue == False:
 			#having played any recent Team Deathmatch mode games
 			if ((party_tally-1) == -1) and (len(match_obj) == 0):
 				print('No recent team match results have been found for ' + user_prompt + '.  ')
+				print()
+			
 			#display how many other players are part of the 
 			#searched user's party if the user has played at least
 			#one Team Deathmatch game
 			elif ((party_tally-1) == -1) and (len(match_obj) != 0):
 				print('Based on ' + user_prompt + '\'s most recent three team matches, ' + str(party_tally) + ' other players are a part of this player\'s party.  ')
+				print()
+				
 			#display that the user is not playing with a party
 			else:
 				print('Based on ' + user_prompt + '\'s most recent three team matches, ' + str(party_tally-1) + ' other players are a part of this player\'s party.  ')
-			
+				
 			#display the party's members if at least two people
 			#belong to the partys
 			if (len(party_members) > 1):
