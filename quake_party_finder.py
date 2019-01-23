@@ -63,9 +63,8 @@ def party_finder():
 			#assign HTTP GET results to its appropriate variable
 			match_con = json.loads(urllib.request.urlopen(req).read())
 		# catch any HTTP 400 bad request errors
-		except urllib.error.HTTPError:
-			print('HTTP error exception.  ')
-			print()
+		except urllib.error.HTTPError as e:
+			print(e)
 		
 		# inform the user that the searched user does not have a
 		# Quake account
