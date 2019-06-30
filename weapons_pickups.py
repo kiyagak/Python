@@ -1,6 +1,3 @@
-# import modules
-import urllib.request, json, urllib.parse
-
 '''
 Name: Kuteesa Kiyaga
 Date: January 28, 2019
@@ -8,6 +5,9 @@ Function: Find an individual player's best weapon and
 		  how often they pick up various map items within
 		  the Team Deathmatch game mode.  
 '''
+
+# import modules
+import urllib.request, json, urllib.parse
 
 
 
@@ -375,8 +375,6 @@ def weapons_pickups(user_prompt):
 		# display JSON object containing data about weapons
 		# and how effectively they're used
 		print(json.dumps(sorted_array_damage, indent=4))
-			
-			
-			
-#execute code block contained within function
+
+# execute code block contained within function
 weapons_pickups('SyncError')
