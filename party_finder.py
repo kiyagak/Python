@@ -1,5 +1,5 @@
-# import libraries
-import urllib.request, json, urllib.parse
+# import modules
+import urllib.request, json, urllib.parse, re, weapons_pickups
 
 '''
 Name: Kuteesa Kiyaga
@@ -13,20 +13,53 @@ Function: Determine whether individual Quake Champions users
 
 #define function to contain code block
 def party_finder():
+	# variable that stores process instructions
+	process_instructions = (
+		'Process instructions: press or type the following '
+		'in verbatim to operate this process.  '
+		'\n-\t-\t-\t-\t-'
+		'\n[?]\t\tdisplay process instructions'
+		'\n[-][#]\t\tremove a player from the team players\' array, i.e. [-][1]'
+		'\n[*]\t\tclear the team players\' array'
+		'\n[.]\t\tdisplay weapon and pickup data for the team\'s players'
+		'\n[STOP]\t\tstop the process'
+		'\n-\t-\t-\t-\t-'
+		'\n'
+	)
+	
+	# display instructions for operating the program
+	print(process_instructions)
+	
 	# url string that will have a username parameter appended to it
 	# contains user's recent match IDs
 	player_stats_url = 'https://stats.quake.com/api/v2/Player/GamesSummary?name='
 
 	# boolean variable that terminates the program once it equals True
 	break_queue = False
+	
+	# create array to contain searched players
+	team_players_array = []
+	
+	# initialize weapon pickups class
+	weps_picks = weapons_pickups
+	
+	# initialize variable to count how many players are in the
+	# team player array
+	team_player_tally = 0
 
 	# repeat prompting user for the desired user to look up
 	while break_queue == False:
-		# print instructions outlining how to terminate the program
-		print('Type "[STOP]", with square braced included, to stop the process.  ')
+		# display the current team players array
+		print('Current team composition: ' + str(team_players_array))
+		print()
 		# prompt the user to enter a username
 		user_prompt = input("Enter a player username: ")
+		# variable to determine whether or not [-][#] has been entered
+		# where # is a number
+		del_rgx = re.search('\[\-\]\[\d*\]', user_prompt.lower())
 		
+		
+			
 		# make the program perform an action if the 
 		# user enters the termination phrase
 		if user_prompt.lower() == '[stop]':
@@ -41,8 +74,19 @@ def party_finder():
 			if break_prompt.lower() == 'y':
 				# variable terminates program if set to True
 				break_queue = True
+		elif (del_rgx != None) and len(team_players_array) != 0:
+			del_index = int(del_rgx.group(0).split('[-]', 1)[1].replace('[', '').replace(']', '')) - 1
+			del team_players_array[del_index]
+			team_player_tally -= 1
+		elif user_prompt.lower() == '[*]':
+			team_players_array = []
+		elif user_prompt.lower() == '[?]':
+			print(process_instructions)
+		elif user_prompt.lower() == '[.]':
+			for player_index in range(len(team_players_array)):
+				print(weps_picks.weapons_pickups(team_players_array[player_index]))
 		
-		
+			
 		
 		# create a HTTP GET request using the player stats URL 
 		# and the username parameter
@@ -58,12 +102,13 @@ def party_finder():
 		#variable containing designed to contain HTTP GET results
 		match_con = None
 
-		
+		# surround HTTP get variable with a try/except statement
 		try:
 			#assign HTTP GET results to its appropriate variable
 			match_con = json.loads(urllib.request.urlopen(req).read())
 		# catch any HTTP 400 bad request errors
 		except urllib.error.HTTPError as e:
+			# print the error message
 			print(e)
 		
 		# inform the user that the searched user does not have a
@@ -92,6 +137,10 @@ def party_finder():
 		elif ('matches' not in match_con) and (user_prompt.lower() == '[stop]') and (break_prompt.lower() != 'y' or break_prompt.lower() != 'n'):
 			print('You have not entered N or Y.  Press N or Y to stop the process.  ')
 		else:
+			# append searched user into the team players array
+			if user_prompt not in str(team_players_array):
+				team_players_array.append(user_prompt)
+			
 			# variable containing the user's match data
 			matches = match_con['matches']
 			# array containing the searched user's team players
@@ -133,43 +182,58 @@ def party_finder():
 					match_req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.67 Safari/537.36')
 					match_req.add_header('Referer', 'www.google.com')
 					
+					# add an empty JSON object to the items JSON array key
+					team_array['items'].append({})
+					
 					# variable to store the searched user's team number
 					# in each individual match
 					player_team = None
 					
 					# variable containing match statistics of all players
 					# from both teams
-					stats_object = json.loads(urllib.request.urlopen(match_req).read())['battleReportPersonalStatistics']
+					stats_object = None
 					
-					# add an empty JSON object to the items JSON array key
-					team_array['items'].append({})
 					
-					# iterate through all players found in the stats object
-					for player in stats_object:
-						# variable containing the player's nickname
-						player_nick = player['nickname']
-						# variable containing all players' team number
-						# i.e. 0 or 1 in Team Deathmatch mode
-						team_index = player['teamIndex']
+					
+					# surround HTTP get variable with a try/except statement
+					try:
+						# variable containing match statistics of all players
+						# from both teams
+						stats_object = json.loads(urllib.request.urlopen(match_req).read())['battleReportPersonalStatistics']
+					# catch any HTTP errors
+					except urllib.error.HTTPError as e:
+						# print error message
+						print(e)
+					
+					
+					
+					if stats_object != None:
+						# iterate through all players found in the stats object
+						for player in stats_object:
+							# variable containing the player's nickname
+							player_nick = player['nickname']
+							# variable containing all players' team number
+							# i.e. 0 or 1 in Team Deathmatch mode
+							team_index = player['teamIndex']
+							
+							# if the searched user matches a match player's nickname
+							# set the player team to the match player's team number
+							if user_prompt.lower() == player_nick.lower():
+								player_team = team_index
 						
-						# if the searched user matches a match player's nickname
-						# set the player team to the match player's team number
-						if user_prompt.lower() == player_nick.lower():
-							player_team = team_index
-					
-					# iterate through all players found in the stats object
-					for player in stats_object:
-						# variable containing all players' team number
-						# i.e. 0 or 1 in Team Deathmatch mode
-						team_index = player['teamIndex']
-						# variable containing the player's nickname
-						player_nick = player['nickname']
+						# iterate through all players found in the stats object
+						for player in stats_object:
+							# variable containing all players' team number
+							# i.e. 0 or 1 in Team Deathmatch mode
+							team_index = player['teamIndex']
+							# variable containing the player's nickname
+							player_nick = player['nickname']
 						
-						# add players to player array if they share the same
-						# team number as the searched user's team number
-						if team_index == player_team:
-							player_array.append(player_nick)
-							team_array['items'][tdm_tally-1]['player_array'] = player_array
+							# add players to player array if they share the same
+							# team number as the searched user's team number
+							if team_index == player_team:
+								player_array.append(player_nick)
+								team_array['items'][tdm_tally-1]['player_array'] = player_array
 					
 					# empty the player array after adding it to 
 					# the team array JSON object
@@ -266,7 +330,6 @@ def party_finder():
 			if ((party_tally-1) == -1) and (len(match_obj) == 0):
 				print('No recent team match results have been found for ' + user_prompt + '.  ')
 				print()
-			
 			# display how many other players are part of the 
 			# searched user's party if the user has played at least
 			# one Team Deathmatch game
@@ -283,6 +346,6 @@ def party_finder():
 			if (len(party_members) > 1):
 				print('The party members are: ' + str(party_members))
 			print()
-
+			
 #execute code block contained within function
 party_finder()
