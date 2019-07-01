@@ -178,7 +178,8 @@ def kijiji_cpu_scrape(cpu_url, manager_list):
 			result_object = {}
 	
 	# if the JSON object isn't empty
-	if json_object != {}:
+	# and there is one or more ad for the processor
+	if (json_object != {}) and (json_object['kijiji_ads'] != []):
 		# add the JSON object to an array
 		manager_list.append(json_object)
 
