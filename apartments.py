@@ -91,9 +91,6 @@ def kijiji_scrape(radius):
 				# stop the infinite loop
 				break
 				
-		# if the JSON object isn't empty
-		# and there is one or more ad for the processor
-		#if (json_object != {}) and (json_object['kijiji_ads'] != []):
 		# variable containing a sorted JSON object
 		# sorted based on lowest price
 		sorted_object = {'kijiji_ads': sorted(json_object['kijiji_ads'], key=lambda x : x['price'])}
