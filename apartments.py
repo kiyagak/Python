@@ -1,6 +1,6 @@
 '''	Name:		Kuteesa Kiyaga
 	Date:		June 30, 2019
-	Function:	Concurrently scrape Kijiji for processor advertisements.  
+	Function:	Scrape Kijiji for processor advertisements.  
 '''
 
 # import modules
