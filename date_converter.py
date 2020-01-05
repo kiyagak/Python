@@ -6,12 +6,14 @@
 
 # import modules
 from datetime import datetime, timedelta, date
-import time
+import time, locale
 
 # declare function
 # taking the string containing the date string
 # and the format of the date
-def reformat(dateStr, refmtStr):
+def reformat(dateStr, refmtStr, locale_value):
+	locale.setlocale(locale.LC_ALL, locale_value)
+	
 	# if the the date string is a string type
 	if type(dateStr) == str:
 		# convert the date string to all lowercase
@@ -135,10 +137,10 @@ def reformat(dateStr, refmtStr):
 			cal = cal - timedelta(weeks=prevInt)
 		# if the date string contains "month"
 		elif month in dateStr:
-			# variable storing the month's numeric value
+			# variable storing the day's numeric value
 			prevInt = int(dateStr.split(" " + month)[0])
-			# set today's date to the date minus prevInt's months
-			cal = date.today().replace(month=date.today().timetuple()[1] - prevInt)
+			# set today's date to the date minus prevInt's days
+			cal = cal - timedelta(days=(prevInt * int(365/12)))
 		# if the date string contains "year"
 		elif year in dateStr:
 			# variable storing the year's numeric value
@@ -167,15 +169,19 @@ def reformat(dateStr, refmtStr):
 	return pubDate
 	
 
+
+
 # execute the function using various date format
-print(reformat(1533754439, ""))
-print(reformat('December 18, 2006', '%B %d, %Y'))
-print(reformat('09-12-2018', '%m-%d-%Y'))
-print(reformat('2 seconds ago', ""))
-print(reformat('8 minutes ago', ""))
-print(reformat('an hour ago', ""))
-print(reformat('yesterday', ""))
-print(reformat('2 months ago', ""))
-print(reformat('3 weeks ago', ""))
-print(reformat('3 years ago', ""))
-print(reformat(1533754439505, ""))
+print(reformat('2 months ago', '', 'en'))
+print(reformat('2 months ago', '', 'en'))
+print(reformat('26-décembre-19', '%d-%B-%y', 'fr'))
+print(reformat(1533754439, '', 'en'))
+print(reformat('December 18, 2006', '%B %d, %Y', 'en'))
+print(reformat('09-12-2018', '%m-%d-%Y', 'en'))
+print(reformat('2 seconds ago', '', 'en'))
+print(reformat('8 minutes ago', '', 'en'))
+print(reformat('an hour ago', '', 'en'))
+print(reformat('yesterday', '', 'en'))
+print(reformat('3 weeks ago', '', 'en'))
+print(reformat('3 years ago', '', 'en'))
+print(reformat(1533754439505, '', 'en'))
